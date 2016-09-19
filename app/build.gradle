@@ -1,0 +1,57 @@
+apply plugin: 'com.android.model.application'
+
+def libdistribution_root = 'src/main/jni/Lib'
+
+model {
+    android {
+        compileSdkVersion = 23
+        buildToolsVersion = "24.0.2"
+        defaultConfig {
+            applicationId = "lecip.co.jp.ddudisplay6"
+            minSdkVersion.apiLevel = 23
+            targetSdkVersion.apiLevel = 23
+            versionCode = 1
+            versionName = "1.0"
+        }
+        ndk {
+            moduleName = "java-native-serialcomm"
+            ldLibs.addAll(['android', 'log'])
+
+            cppFlags.addAll(['-I' + file('src/main/jni/SP'),
+                             '-I' + file('src/main/jni/Lib'),
+                             '-L' + file('src/main/jni/Lib')
+            ])
+
+            cppFlags.add("-std=c++11")
+            cppFlags.add("-fexceptions")
+            cppFlags.add("-Wall")
+            cppFlags.add("-static")
+            stl "gnustl_shared"
+
+            abiFilters.addAll(['armeabi'])
+        }
+        sources {
+            main {
+                jniLibs {
+                    source {
+                        srcDir "${libdistribution_root}"
+                    }
+                }
+            }
+        }
+
+        buildTypes {
+            release {
+                minifyEnabled false
+                proguardFiles.add(file('proguard-android.txt'))
+            }
+        }
+        productFlavors {
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile 'com.android.support:appcompat-v7:24.2.0'
+}
